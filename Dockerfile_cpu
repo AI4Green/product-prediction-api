@@ -15,6 +15,7 @@ RUN pip install \
     networkx==2.5.1 \
     opennmt-py==1.2.0 \
     pandas==1.5.3 \
+    pillow==10.1.0 \
     pebble==5.0.3 \
     protobuf==3.19.0 \
     pydantic==1.10.12 \
