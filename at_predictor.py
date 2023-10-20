@@ -71,6 +71,8 @@ class ATPredictor:
         self.model_path = args.model_path
         self.test_output_path = args.test_output_path
         self.aug_factor = args.aug_factor
+        
+        os.makedirs(self.test_output_path, exist_ok=True)
         self.output_file = os.path.join(self.test_output_path, "predictions.csv")
 
         random.seed(args.seed)
