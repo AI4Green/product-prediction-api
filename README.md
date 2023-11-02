@@ -8,18 +8,13 @@ Benchmarking and serving modules for reaction outcome prediction with Augmented 
 
 First set up the url to the remote registry
 ```
-export ASKCOS_REGISTRY=registry.gitlab.com/mlpds_mit/askcosv2
+export ASKCOS_REGISTRY=registry.gitlab.com/mlpds_mit/askcosv2/askcos2_core
 ```
 Then follow the instructions below to use either Docker, or Singularity (if Docker or root privilege is not available). Building or pulling either CPU or GPU image would suffice. If GPUs are not available, just go with the CPU image.
 
 #### Using Docker
 
-- Option 1: pull pre-built image (ASKCOSv2 permission required)
-```
-(CPU) docker pull ${ASKCOS_REGISTRY}/forward_predictor/augmented_transformer:1.0-cpu
-(GPU) docker pull ${ASKCOS_REGISTRY}/forward_predictor/augmented_transformer:1.0-gpu
-```
-- Option 2: build from local
+- Only option: build from local
 ```
 (CPU) docker build -f Dockerfile_cpu -t ${ASKCOS_REGISTRY}/forward_predictor/augmented_transformer:1.0-cpu .
 (GPU) docker build -f Dockerfile_gpu -t ${ASKCOS_REGISTRY}/forward_predictor/augmented_transformer:1.0-gpu .
@@ -65,7 +60,7 @@ The error messages related to torchserve logging can be safely ignored. Note tha
 
 - Sample query
 ```
-curl http://0.0.0.0:9510/predictions/USPTO_480k_mix \
+curl http://0.0.0.0:9510/predictions/pistachio_23Q3 \
     --header "Content-Type: application/json" \
     --request POST \
     --data '{"smiles": ["[CH2:23]1[O:24][CH2:25][CH2:26][CH2:27]1.[F:1][c:2]1[c:3]([N+:10](=[O:11])[O-:12])[cH:4][c:5]([F:9])[c:6]([F:8])[cH:7]1.[H-:22].[NH2:13][c:14]1[s:15][cH:16][cH:17][c:18]1[C:19]#[N:20].[Na+:21]"]}'
