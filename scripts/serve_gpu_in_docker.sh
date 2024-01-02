@@ -4,7 +4,13 @@ if [ -z "${ASKCOS_REGISTRY}" ]; then
   export ASKCOS_REGISTRY=registry.gitlab.com/mlpds_mit/askcosv2/askcos2_core
 fi
 
-docker run -d --rm --gpus '"device=0"' \
+if [ "$(docker ps -aq -f status=exited -f name=^forward_augmented_transformer$)" ]; then
+  # cleanup if container died;
+  # otherwise it would've been handled by make stop already
+  docker rm forward_augmented_transformer
+fi
+
+docker run -d --gpus '"device=0"' \
   --name forward_augmented_transformer \
   -p 9510-9512:9510-9512 \
   -v "$PWD/mars":/app/augmented_transformer/mars \

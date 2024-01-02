@@ -20,5 +20,5 @@ singularity:
 
 commands:
   download: sh scripts/download_trained_models.sh
-  stop-docker: docker stop forward_augmented_transformer
+  stop-docker: docker stop forward_augmented_transformer; docker rm forward_augmented_transformer
   stop-singularity: singularity instance stop forward_augmented_transformer
