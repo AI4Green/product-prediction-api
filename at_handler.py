@@ -18,8 +18,8 @@ class TransformerHandler:
 
         # TODO: temporary hardcode
         self.use_cpu = None
-        self.n_best = 10
-        self.beam_size = 20
+        self.n_best = 30
+        self.beam_size = 30
 
     def initialize(self, context):
         self._context = context
@@ -44,7 +44,7 @@ class TransformerHandler:
 
         onmt_config = {
             "models": checkpoint_file,
-            "n_best": self.n_best * 2,
+            "n_best": self.n_best,
             "beam_size": self.beam_size,
             "gpu": -1 if self.use_cpu else 0
         }
@@ -58,7 +58,6 @@ class TransformerHandler:
         self.initialized = True
 
     def preprocess(self, data: List):
-        print(data)
         tokenized_smiles = [{"src": smi_tokenizer(canonicalize_smiles(smi))}
                             for smi in data[0]["body"]["smiles"]]
 
@@ -66,30 +65,50 @@ class TransformerHandler:
 
     def inference(self, data: List[Dict[str, str]]):
 
-        products, scores, _, _, _ = self.model.run(inputs=data)
-
         results = []
-        for i in range(len(data)):  # essentially reshaping (b*n_best,) into (b, n_best)
-            valid_products = []
-            valid_scores = []
+        try:
+            products, scores, _, _, _ = self.model.run(inputs=data)
+            assert len(data) * self.n_best == len(products) == len(scores), "output doesnt match n_best"
+        
+            for i in range(len(data)):
+                prod_subset = products[i*self.n_best:(i+1)*self.n_best]
+                score_subset = scores[i*self.n_best:(i+1)*self.n_best]
 
-            for j in range(self.n_best * 2 * i, self.n_best * 2 * (i + 1)):
-                if len(valid_products) == self.n_best:
-                    break
-
-                product = "".join(products[j].split())
-                if not canonicalize_smiles(product):
-                    continue
-                else:
-                    valid_products.append(product)
-                    valid_scores.append(scores[j])
-
-            result = {
-                "products": valid_products,
-                "scores": valid_scores
-            }
-            results.append(result)
-
+                valid_products = []
+                valid_scores = []
+                for prod, score in zip(prod_subset, score_subset):
+                    product = "".join(prod.split())
+                    if not canonicalize_smiles(product):
+                        continue
+                    else:
+                        valid_products.append(product)
+                        valid_scores.append(score)
+                result = {
+                    "products": valid_products,
+                    "scores": valid_scores
+                }
+                results.append(result)
+        except:
+            for input in data:
+                try:
+                    products, scores, _, _, _ = self.model.run(inputs=[input])
+                except:
+                    products, scores = [], []
+                
+                valid_products = []      
+                valid_scores = []
+                for prod, score in zip(products, scores):
+                    product = "".join(prod.split())
+                    if not canonicalize_smiles(product):
+                        continue
+                    else:
+                        valid_products.append(product)
+                        valid_scores.append(score)
+                result = {
+                    "products": valid_products,
+                    "scores": valid_scores
+                }
+                results.append(result)
         return results
 
     def postprocess(self, data: List):
@@ -101,6 +120,5 @@ class TransformerHandler:
         output = self.preprocess(data)
         output = self.inference(output)
         output = self.postprocess(output)
-        print(output)
 
         return output
