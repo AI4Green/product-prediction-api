@@ -1,6 +1,6 @@
 # Augmented Transformer
 
-Benchmarking and serving modules for reaction outcome prediction with Augmented Transformer, reimplemented using OpenNMT based on the manuscript (https://www.nature.com/articles/s41467-020-19266-y).
+Benchmarking and serving modules for reaction outcome prediction with Augmented Transformer, reimplemented using OpenNMT based on the manuscript (https://www.nature.com/articles/s41467-020-19266-y). Models are released under the same license as the source code (MIT license).
 
 ## Serving
 
