@@ -1,7 +1,0 @@
-checkpoints/*
-checkpoints_tmp/*
-data/*
-logs/*
-results/*
-mars/*
-*.sif

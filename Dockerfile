@@ -1,0 +1,48 @@
+FROM mambaorg/micromamba:1.4.7
+
+USER root
+# Keep the base environment activated
+ARG MAMBA_DOCKERFILE_ACTIVATE=1
+RUN apt update && apt -y install git gcc g++ make
+
+# Use micromamba to resolve conda-forge, much faster than conda
+RUN micromamba install -y python=3.8.17 pip=23.2.1 rdkit=2020.09.5 openjdk=11.0.15 -c conda-forge
+RUN micromamba install -y pytorch==1.12.1 cpuonly mkl=2023.2.0 -c pytorch -c conda-forge
+RUN micromamba install -y rdchiral_cpp=1.1.2 -c conda-forge
+RUN pip install \
+    fastapi==0.95.1 \
+    hdbscan==0.8.33 \
+    networkx==2.5.1 \
+    opennmt-py==1.2.0 \
+    pandas==1.5.3 \
+    pebble==5.0.3 \
+    pillow==10.1.0 \
+    protobuf==3.19.0 \
+    pydantic==1.10.12 \
+    requests==2.31.0 \
+    rxnmapper==0.3.0 \
+    scikit-learn==1.0.2 \
+    scipy==1.7.3 \
+    torch-model-archiver==0.3.1 \
+    torchserve==0.3.1 \
+    tqdm==4.66.1 \
+    urllib3==1.26.16 \
+    uvicorn==0.21.1
+
+COPY . /app/augmented_transformer
+WORKDIR /app/augmented_transformer
+
+ENV CUDA_VISIBLE_DEVICES 10
+
+EXPOSE 9510 9511 9512
+
+CMD ["torchserve", \
+     "--start", \
+     "--foreground", \
+     "--ncs", \
+     "--model-store", "/app/augmented_transformer/mars", \
+     "--models", \
+     "pistachio_23Q3=/app/augmented_transformer/mars/pistachio_23Q3.mar", \
+     "USPTO_STEREO=/app/augmented_transformer/mars/USPTO_STEREO.mar", \
+     "cas=/app/augmented_transformer/mars/cas.mar", \
+     "--ts-config", "/app/augmented_transformer/config.properties"]

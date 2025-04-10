@@ -24,3 +24,4 @@ if [ -n "${DROPBOX_LINK_PASSWORD}" ]; then
         echo "mars/cas.mar Downloaded."
     fi
 fi
+then
