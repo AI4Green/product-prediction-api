@@ -1,3 +1,12 @@
+# AI4Green Instructions
+Code reused from: https://gitlab.com/mlpds_mit/askcosv2/forward_predictor/augmented_transformer
+The dockerfile has been edited to create a standalone image that be run using:
+```
+docker run <image-name> -d -p 9510-9512:9510-9512
+```
+Docker image can be found at: https://hub.docker.com/r/ai4greeneln/product_prediction
+
+# Original README
 # Augmented Transformer
 
 Benchmarking and serving modules for reaction outcome prediction with Augmented Transformer, reimplemented using OpenNMT based on the manuscript (https://www.nature.com/articles/s41467-020-19266-y). Models are released under the same license as the source code (MIT license).
